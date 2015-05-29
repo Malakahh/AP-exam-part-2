@@ -13,10 +13,6 @@ void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
 	{
 		this->coefficients[exponent] = value;
 	}
-	/*else if (exponent == this->coefficients.size())
-	{
-		this->coefficients.push_back(value);
-	}*/
 	else if (exponent >= this->coefficients.size())
 	{
 		for (unsigned int i = coefficients.size(); i < exponent + 1; i++)
