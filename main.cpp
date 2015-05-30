@@ -38,6 +38,30 @@ BOOST_AUTO_TEST_CASE(Constructor)
 	std::cout << p << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(CopyConstructor)
+{
+	const auto value = 40;
+	const unsigned int expo = 4;
+	Polynomial p{value, expo};
+
+	Polynomial p2(p);
+	p2.SetCoefficient(77, 0);
+
+	for (auto i = 0; i <= p2.GetHighestCoefficient(); i++)
+	{
+		if (i == 0)
+		{
+			BOOST_CHECK_NE(p.GetCoefficient(i), p2.GetCoefficient(i));
+		}
+		else
+		{
+			BOOST_CHECK_EQUAL(p.GetCoefficient(i), p2.GetCoefficient(i));
+		}
+	}
+
+	std::cout << p2 << std::endl;
+}
+
 BOOST_AUTO_TEST_CASE(Insert_Ordered)
 {
 	Polynomial p;
@@ -306,4 +330,22 @@ BOOST_AUTO_TEST_CASE(Valuate)
 		//Using two-decimal precision
 		BOOST_CHECK(trunc(10. * p.ValueAt(x[i])) == trunc(10. * values[i]));
 	}
+}
+
+BOOST_AUTO_TEST_CASE(Derivative)
+{
+	Polynomial p;
+	auto list = std::vector<int> {5, -1, 4, 2};
+	auto expectedResult = std::vector<int> {-1, 8, 6};
+
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	auto pMark = p.CalculateDerivative();
+
+	for (auto i = 0; i <= pMark.GetHighestCoefficient(); i++)
+	{
+		BOOST_CHECK_EQUAL(pMark.GetCoefficient(i), expectedResult[i]);
+	}
+
+	std::cout << pMark << std::endl;
 }

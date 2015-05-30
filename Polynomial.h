@@ -13,8 +13,11 @@ private:
 	std::vector<int> coefficients;
 
 public:
-	Polynomial();
+	Polynomial(); //Default constructor
+	Polynomial(const Polynomial& p); //Copy constructor
 	Polynomial(const int value, const unsigned int exponent);
+
+
 	void SetCoefficient(const int value, const unsigned int exponent);
 	template<typename T> void SetCoefficientRange(typename T::const_iterator first, typename T::const_iterator last, const unsigned int offset = 0)
 	{
@@ -41,6 +44,7 @@ public:
 	}
 
 	double ValueAt(const double x);
+	Polynomial CalculateDerivative();
 
 	friend std::ostream& operator<<(std::ostream&, const Polynomial&);
 };

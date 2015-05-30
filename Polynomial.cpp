@@ -2,6 +2,11 @@
 
 Polynomial::Polynomial(): Polynomial{0, 0}{}
 
+Polynomial::Polynomial(const Polynomial& p)
+{
+	this->coefficients = std::vector<int>(p.coefficients);
+}
+
 Polynomial::Polynomial(const int value, const unsigned int exponent)
 {
 	this->SetCoefficient(value, exponent);
@@ -84,6 +89,21 @@ double Polynomial::ValueAt(const double x)
 	}
 
 	return res;
+}
+
+Polynomial Polynomial::CalculateDerivative()
+{
+	Polynomial p(*this);
+
+	for (auto i = 0; i < p.GetHighestCoefficient(); i++)
+	{
+		p.SetCoefficient(p.GetCoefficient(i + 1) * (i + 1), i);
+	}
+
+	//Erase last exponent
+	p.coefficients.erase(p.coefficients.end() - 1);
+
+	return p;
 }
 
 std::ostream& operator<<(std::ostream& s, const Polynomial& p)
