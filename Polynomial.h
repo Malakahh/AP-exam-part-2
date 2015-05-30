@@ -28,6 +28,7 @@ public:
 	const int GetHighestCoefficient() const;
 
 	void Scale(const int scalar);
+	void AddRoot(const int root);
 
 	friend std::ostream& operator<<(std::ostream&, const Polynomial&);
 };

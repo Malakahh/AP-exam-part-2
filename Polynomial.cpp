@@ -52,6 +52,28 @@ void Polynomial::Scale(const int scalar)
 	}
 }
 
+void Polynomial::AddRoot(const int root)
+{
+	const auto start = this->GetHighestCoefficient();
+	for (auto i = start; i >= 0; i--)
+	{
+		//Move value to higher exponent
+		if (i == this->GetHighestCoefficient())
+		{
+			//Higher exponent does not yet exist
+			this->SetCoefficient(this->GetCoefficient(i), i + 1);
+		}
+		else
+		{
+			//Higher expoent exists, so add to its value
+			this->SetCoefficient(this->GetCoefficient(i) + this->GetCoefficient(i + 1), i + 1);
+		}
+
+		//Calculate current exponent value
+		this->SetCoefficient(this->GetCoefficient(i) * root * -1, i);
+	}
+}
+
 std::ostream& operator<<(std::ostream& s, const Polynomial& p)
 {
 	s << "P(x) = ";
