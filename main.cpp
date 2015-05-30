@@ -261,3 +261,25 @@ BOOST_AUTO_TEST_CASE(Add_Root)
 
 	std::cout << p << std::endl;
 }
+
+BOOST_AUTO_TEST_CASE(Add_Root_Range)
+{
+	Polynomial p;
+	auto roots = std::vector<int>{-2, -1, 0, 1, 4};
+	auto list = std::vector<int> {5, -1, 4, 2};
+	auto expectedResult = std::vector<int>{0, 40, 2, -15, 23, -25, -27, 0, 2};
+
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	p.AddRootRange<std::vector<int>>(roots.cbegin(), roots.cend());
+
+	BOOST_REQUIRE(p.GetHighestCoefficient() == list.size() - 1 + roots.size());
+
+	//Check
+	for (unsigned int i = 0; i <= p.GetHighestCoefficient(); i++)
+	{
+		BOOST_CHECK_EQUAL(p.GetCoefficient(i), expectedResult[i]);
+	}
+
+	std::cout << p << std::endl;
+}

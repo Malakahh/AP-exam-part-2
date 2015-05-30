@@ -28,7 +28,16 @@ public:
 	const int GetHighestCoefficient() const;
 
 	void Scale(const int scalar);
+
 	void AddRoot(const int root);
+	template<typename T> void AddRootRange(typename T::const_iterator first, typename T::const_iterator last)
+	{
+		while (first != last)
+		{
+			this->AddRoot(*first);
+			first++;
+		}
+	}
 
 	friend std::ostream& operator<<(std::ostream&, const Polynomial&);
 };
