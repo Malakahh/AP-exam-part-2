@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <iterator>
+#include <cmath>
 
 class Polynomial
 {
@@ -38,6 +39,8 @@ public:
 			first++;
 		}
 	}
+
+	float ValueAt(const float x);
 
 	friend std::ostream& operator<<(std::ostream&, const Polynomial&);
 };

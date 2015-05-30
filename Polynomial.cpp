@@ -74,6 +74,18 @@ void Polynomial::AddRoot(const int root)
 	}
 }
 
+float Polynomial::ValueAt(const float x)
+{
+	float res = 0;
+
+	for (auto i = 0; i <= this->GetHighestCoefficient(); i++)
+	{
+		res += this->GetCoefficient(i) * std::pow(x, i);
+	}
+
+	return res;
+}
+
 std::ostream& operator<<(std::ostream& s, const Polynomial& p)
 {
 	s << "P(x) = ";

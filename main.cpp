@@ -283,3 +283,27 @@ BOOST_AUTO_TEST_CASE(Add_Root_Range)
 
 	std::cout << p << std::endl;
 }
+
+BOOST_AUTO_TEST_CASE(Valuate)
+{
+	Polynomial p;
+	auto roots = std::vector<int>{-2, -1, 0, 1, 4};
+	auto list = std::vector<int> {5, -1, 4, 2};
+
+	auto x = std::vector<float> {-2.5, -1.5, -0.5, 0.5, 1.5, 2.5};
+	auto values = std::vector<float> {-53.32, 45.11, -15.82, 18.86, -315.82, -5204.88}; //Values calculated using Graph, some precision has been lost, https://www.padowan.dk/
+
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	p.AddRootRange<std::vector<int>>(roots.cbegin(), roots.cend());
+
+	BOOST_REQUIRE(p.GetHighestCoefficient() == list.size() - 1 + roots.size());
+
+	for (auto i = 0; i < x.size(); i++)
+	{
+		std::cout << x[i] << " - CalcVal: " << p.ValueAt(x[i]) << " Actual: " << values[i] << std::endl;
+
+		//Using two-decimal precision
+		BOOST_CHECK(trunc(10. * p.ValueAt(x[i])) == trunc(10. * values[i]));
+	}
+}
