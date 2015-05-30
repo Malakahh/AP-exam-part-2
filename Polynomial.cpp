@@ -106,6 +106,23 @@ Polynomial Polynomial::CalculateDerivative()
 	return p;
 }
 
+double Polynomial::IntegralPart(const int n)
+{
+	auto res = 0.;
+
+	for (auto i = 0; i <= this->GetHighestCoefficient(); i++)
+	{
+		res += this->GetCoefficient(i) * std::pow(n, i + 1) / (i + 1);
+	}
+
+	return res;
+}
+
+double Polynomial::CalculateIntegral(const int a, const int b)
+{
+	return this->IntegralPart(b) - this->IntegralPart(a);
+}
+
 std::ostream& operator<<(std::ostream& s, const Polynomial& p)
 {
 	s << "P(x) = ";

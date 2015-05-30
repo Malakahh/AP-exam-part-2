@@ -12,6 +12,8 @@ class Polynomial
 private:
 	std::vector<int> coefficients;
 
+	double IntegralPart(const int n);
+
 public:
 	Polynomial(); //Default constructor
 	Polynomial(const Polynomial& p); //Copy constructor
@@ -45,6 +47,7 @@ public:
 
 	double ValueAt(const double x);
 	Polynomial CalculateDerivative();
+	double CalculateIntegral(const int a, const int b);
 
 	friend std::ostream& operator<<(std::ostream&, const Polynomial&);
 };

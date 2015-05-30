@@ -349,3 +349,21 @@ BOOST_AUTO_TEST_CASE(Derivative)
 
 	std::cout << pMark << std::endl;
 }
+
+BOOST_AUTO_TEST_CASE(Integral)
+{
+	Polynomial p;
+	auto a = 3;
+	auto b = 5;
+	auto list = std::vector<int> {5, -1, 4, 2};
+	auto expectedResult = 1214. / 3.;
+
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	auto i = p.CalculateIntegral(a, b);
+
+	//Using two-decimal precision
+	BOOST_CHECK(trunc(10. * i) == trunc(10. * expectedResult));
+
+	std::cout << "Intergal: " << i << " Expected: " << expectedResult << std::endl;
+}
