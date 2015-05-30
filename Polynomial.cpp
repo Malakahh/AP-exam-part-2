@@ -74,9 +74,9 @@ void Polynomial::AddRoot(const int root)
 	}
 }
 
-float Polynomial::ValueAt(const float x)
+double Polynomial::ValueAt(const double x)
 {
-	float res = 0;
+	double res = 0;
 
 	for (auto i = 0; i <= this->GetHighestCoefficient(); i++)
 	{

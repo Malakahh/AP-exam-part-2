@@ -40,7 +40,7 @@ public:
 		}
 	}
 
-	float ValueAt(const float x);
+	double ValueAt(const double x);
 
 	friend std::ostream& operator<<(std::ostream&, const Polynomial&);
 };
