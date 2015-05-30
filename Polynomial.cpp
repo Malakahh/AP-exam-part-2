@@ -1,10 +1,10 @@
 #include "Polynomial.h"
 
-Polynomial::Polynomial(): Polynomial{0}{}
+Polynomial::Polynomial(): Polynomial{0, 0}{}
 
-Polynomial::Polynomial(const unsigned int exponent)
+Polynomial::Polynomial(const int value, const unsigned int exponent)
 {
-	this->SetCoefficient(0, exponent);
+	this->SetCoefficient(value, exponent);
 }
 
 void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
@@ -42,6 +42,14 @@ const int Polynomial::GetCoefficient(const unsigned int exponent) const
 const int Polynomial::GetHighestCoefficient() const
 {
 	return this->coefficients.size() - 1;
+}
+
+void Polynomial::Scale(const int scalar)
+{
+	for (auto i = 0; i <= this->GetHighestCoefficient(); i++)
+	{
+		this->SetCoefficient(this->GetCoefficient(i) * scalar, i);
+	}
 }
 
 std::ostream& operator<<(std::ostream& s, const Polynomial& p)
