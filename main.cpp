@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(Constructor)
 {
 	const auto value = 40;
 	const unsigned int expo = 4;
-	Polynomial p{value, expo};
+	Polynomial p(value, expo);
 
 	BOOST_REQUIRE(p.GetHighestCoefficient() == expo);
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(CopyConstructor)
 {
 	const auto value = 40;
 	const unsigned int expo = 4;
-	Polynomial p{value, expo};
+	Polynomial p(value, expo);
 
 	Polynomial p2(p);
 	p2.SetCoefficient(77, 0);
@@ -275,7 +275,7 @@ BOOST_AUTO_TEST_CASE(Add_Root)
 	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
 	p.AddRoot(root);
 
-	BOOST_REQUIRE(p.GetHighestCoefficient() == list.size()); //list.size() == oldP.GetHighestCoefficient() + 1
+	BOOST_REQUIRE(p.GetHighestCoefficient() == list.size()); //list.size() is equal to oldP.GetHighestCoefficient() + 1
 
 	//Check
 	for (unsigned int i = 0; i <= p.GetHighestCoefficient(); i++)
@@ -366,4 +366,92 @@ BOOST_AUTO_TEST_CASE(Integral)
 	BOOST_CHECK(trunc(10. * i) == trunc(10. * expectedResult));
 
 	std::cout << "Intergal: " << i << " Expected: " << expectedResult << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(Plus_Equal_Operator)
+{
+	Polynomial p;
+	auto list = std::vector<int> {5, -1, 4, 2};
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	Polynomial p2;
+	auto list2 = std::vector<int> {-3, 6, -2, 5, 3};
+	p2.SetCoefficientRange<std::vector<int>>(list2.cbegin(), list2.cend());
+
+	auto expectedResult = std::vector<int> {2, 5, 2, 7, 3};
+
+	p += p2;
+
+	for (auto i = 0; i <= p2.GetHighestCoefficient(); i++)
+	{
+		BOOST_REQUIRE_EQUAL(p.GetCoefficient(i), expectedResult[i]);
+	}
+
+	std::cout << p << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(Plus_Operator)
+{
+	Polynomial p;
+	auto list = std::vector<int> {5, -1, 4, 2};
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	Polynomial p2;
+	auto list2 = std::vector<int> {-3, 6, -2, 5, 3};
+	p2.SetCoefficientRange<std::vector<int>>(list2.cbegin(), list2.cend());
+
+	auto expectedResult = std::vector<int> {2, 5, 2, 7, 3};
+
+	auto res = p + p2;
+
+	for (auto i = 0; i <= p2.GetHighestCoefficient(); i++)
+	{
+		BOOST_CHECK_EQUAL(res.GetCoefficient(i), expectedResult[i]);
+	}
+
+	std::cout << res << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(Star_Operator)
+{
+	Polynomial p;
+	auto list = std::vector<int> {8, 7, 6, 3};
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	Polynomial p2;
+	auto list2 = std::vector<int> {-2, 0, 10};
+	p2.SetCoefficientRange<std::vector<int>>(list2.cbegin(), list2.cend());
+
+	auto expectedResult = std::vector<int> { -16, -14, 68, 64, 60, 30};
+
+	p *= p2;
+
+	for (auto i = 0; i < expectedResult.size(); i++)
+	{
+		BOOST_REQUIRE_EQUAL(p.GetCoefficient(i), expectedResult[i]);
+	}
+
+	std::cout << p << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(Star__Equal_Operator)
+{
+	Polynomial p;
+	auto list = std::vector<int> {8, 7, 6, 3};
+	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
+
+	Polynomial p2;
+	auto list2 = std::vector<int> {-2, 0, 10};
+	p2.SetCoefficientRange<std::vector<int>>(list2.cbegin(), list2.cend());
+
+	auto expectedResult = std::vector<int> { -16, -14, 68, 64, 60, 30};
+
+	auto res = p * p2;
+
+	for (auto i = 0; i < expectedResult.size(); i++)
+	{
+		BOOST_REQUIRE_EQUAL(res.GetCoefficient(i), expectedResult[i]);
+	}
+
+	std::cout << res << std::endl;
 }

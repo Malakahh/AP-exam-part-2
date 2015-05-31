@@ -49,9 +49,13 @@ public:
 	Polynomial CalculateDerivative();
 	double CalculateIntegral(const int a, const int b);
 
-	friend std::ostream& operator<<(std::ostream&, const Polynomial&);
+	Polynomial& operator+=(const Polynomial& rhs);
+	Polynomial& operator*=(const Polynomial& rhs);
+
 };
 
+Polynomial operator+(const Polynomial& lhs, const Polynomial& rhs);
+Polynomial operator*(const Polynomial& lhs, const Polynomial& rhs);
 std::ostream& operator<<(std::ostream&, const Polynomial&);
 
 #endif

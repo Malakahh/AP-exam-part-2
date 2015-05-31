@@ -123,11 +123,63 @@ double Polynomial::CalculateIntegral(const int a, const int b)
 	return this->IntegralPart(b) - this->IntegralPart(a);
 }
 
+Polynomial& Polynomial::operator+=(const Polynomial& rhs)
+{
+	for (auto i = 0; i <= rhs.GetHighestCoefficient(); i++)
+	{
+		if (i <= this->GetHighestCoefficient())
+		{
+			this->SetCoefficient(rhs.GetCoefficient(i) + this->GetCoefficient(i), i);
+		}
+		else
+		{
+			this->SetCoefficient(rhs.GetCoefficient(i), i);
+		}
+	}
+
+	return *this;
+}
+
+Polynomial& Polynomial::operator *=(const Polynomial& rhs)
+{
+	std::vector<int> res(this->GetHighestCoefficient() + rhs.GetHighestCoefficient() + 1, 0);
+
+	for (auto i = this->GetHighestCoefficient(); i >= 0; i--)
+	{
+		for (auto j = rhs.GetHighestCoefficient(); j >= 0; j--)
+		{
+			res[i + j] += this->GetCoefficient(i) * rhs.GetCoefficient(j);
+		}
+	}
+
+	this->coefficients = res;
+
+	return *this;
+}
+
+Polynomial operator+(const Polynomial& lhs, const Polynomial& rhs)
+{
+	Polynomial p(lhs);
+
+	p += rhs;
+
+	return p;
+}
+
+Polynomial operator*(const Polynomial& lhs, const Polynomial& rhs)
+{
+	Polynomial p(lhs);
+
+	p *= rhs;
+
+	return p;
+}
+
 std::ostream& operator<<(std::ostream& s, const Polynomial& p)
 {
 	s << "P(x) = ";
 
-	for (int i = p.coefficients.size() - 1; i >= 0; i--)
+	for (int i = p.GetHighestCoefficient(); i >= 0; i--)
 	{
 		s << p.GetCoefficient(i);
 		if (i > 0)
