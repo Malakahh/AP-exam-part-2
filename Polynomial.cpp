@@ -1,6 +1,6 @@
 #include "Polynomial.h"
 
-Polynomial::Polynomial(): Polynomial{0, 0}{}
+Polynomial::Polynomial(): Polynomial(0,0) {}
 
 Polynomial::Polynomial(const Polynomial& p)
 {
@@ -10,6 +10,11 @@ Polynomial::Polynomial(const Polynomial& p)
 Polynomial::Polynomial(const int value, const unsigned int exponent)
 {
 	this->SetCoefficient(value, exponent);
+}
+
+Polynomial::Polynomial(std::initializer_list<int> list)
+{
+	this->SetCoefficientRange<std::initializer_list<int>>(list.begin(), list.end());
 }
 
 void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
@@ -91,7 +96,7 @@ double Polynomial::ValueAt(const double x) const
 	return res;
 }
 
-Polynomial Polynomial::CalculateDerivative()
+Polynomial Polynomial::CalculateDerivative() const
 {
 	Polynomial p(*this);
 

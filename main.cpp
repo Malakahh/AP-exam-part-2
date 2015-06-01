@@ -38,6 +38,20 @@ BOOST_AUTO_TEST_CASE(Constructor)
 	std::cout << p << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(ConstructorBraced)
+{
+	Polynomial p{10, 20, -30, -40, 20};
+	auto expectedResult = std::vector<int>{10, 20, -30, -40, 20};
+
+	//Check
+	for (auto i = 0; i <= p.GetHighestCoefficient(); i++)
+	{
+		BOOST_CHECK_EQUAL(p.GetCoefficient(i), expectedResult[i]);
+	}
+
+	std::cout << p << std::endl;
+}
+
 BOOST_AUTO_TEST_CASE(CopyConstructor)
 {
 	const auto value = 40;

@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <iterator>
 #include <cmath>
+#include <initializer_list>
 
 class Polynomial
 {
@@ -15,8 +16,8 @@ private:
 public:
 	Polynomial(); //Default constructor
 	Polynomial(const Polynomial& p); //Copy constructor
+	Polynomial(std::initializer_list<int> list);
 	Polynomial(const int value, const unsigned int exponent);
-
 
 	void SetCoefficient(const int value, const unsigned int exponent);
 	template<typename T> void SetCoefficientRange(typename T::const_iterator first, typename T::const_iterator last, const unsigned int offset = 0)
@@ -44,7 +45,7 @@ public:
 	}
 
 	double ValueAt(const double x) const;
-	Polynomial CalculateDerivative();
+	Polynomial CalculateDerivative() const;
 	double CalculateIntegral(const int a, const int b) const;
 
 	Polynomial& operator+=(const Polynomial& rhs);
