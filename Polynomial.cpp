@@ -34,7 +34,7 @@ void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
 	}
 }
 
-const int Polynomial::GetCoefficient(const unsigned int exponent) const
+int Polynomial::GetCoefficient(const unsigned int exponent) const
 {
 	if (exponent >= this->coefficients.size())
 	{
@@ -44,7 +44,7 @@ const int Polynomial::GetCoefficient(const unsigned int exponent) const
 	return this->coefficients[exponent];
 }
 
-const int Polynomial::GetHighestCoefficient() const
+int Polynomial::GetHighestCoefficient() const
 {
 	return this->coefficients.size() - 1;
 }
@@ -79,7 +79,7 @@ void Polynomial::AddRoot(const int root)
 	}
 }
 
-double Polynomial::ValueAt(const double x)
+double Polynomial::ValueAt(const double x) const
 {
 	double res = 0;
 
@@ -106,21 +106,21 @@ Polynomial Polynomial::CalculateDerivative()
 	return p;
 }
 
-double Polynomial::IntegralPart(const int n)
+double Polynomial::CalculateIntegral(const int a, const int b) const
 {
-	auto res = 0.;
+	auto p = this;
+	auto IntegralPart = [p](const int n){
+		auto res = 0.;
 
-	for (auto i = 0; i <= this->GetHighestCoefficient(); i++)
-	{
-		res += this->GetCoefficient(i) * std::pow(n, i + 1) / (i + 1);
-	}
+		for (auto i = 0; i <= p->GetHighestCoefficient(); i++)
+		{
+			res += p->GetCoefficient(i) * std::pow(n, i + 1) / (i + 1);
+		}
 
-	return res;
-}
+		return res;
+	};
 
-double Polynomial::CalculateIntegral(const int a, const int b)
-{
-	return this->IntegralPart(b) - this->IntegralPart(a);
+	return IntegralPart(b) - IntegralPart(a);
 }
 
 Polynomial& Polynomial::operator+=(const Polynomial& rhs)

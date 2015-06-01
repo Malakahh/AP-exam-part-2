@@ -12,8 +12,6 @@ class Polynomial
 private:
 	std::vector<int> coefficients;
 
-	double IntegralPart(const int n);
-
 public:
 	Polynomial(); //Default constructor
 	Polynomial(const Polynomial& p); //Copy constructor
@@ -30,8 +28,8 @@ public:
 			exponent++;
 		}
 	}
-	const int GetCoefficient(const unsigned int exponent) const;
-	const int GetHighestCoefficient() const;
+	int GetCoefficient(const unsigned int exponent) const;
+	int GetHighestCoefficient() const;
 
 	void Scale(const int scalar);
 
@@ -45,9 +43,9 @@ public:
 		}
 	}
 
-	double ValueAt(const double x);
+	double ValueAt(const double x) const;
 	Polynomial CalculateDerivative();
-	double CalculateIntegral(const int a, const int b);
+	double CalculateIntegral(const int a, const int b) const;
 
 	Polynomial& operator+=(const Polynomial& rhs);
 	Polynomial& operator*=(const Polynomial& rhs);
