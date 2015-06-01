@@ -6,10 +6,9 @@
 
 Polynomial::Polynomial(): Polynomial(0,0) {}
 
-Polynomial::Polynomial(const Polynomial& p)
-{
-	this->coefficients = std::vector<int>(p.coefficients);
-}
+Polynomial::Polynomial(const Polynomial& p) : coefficients(std::vector<int>(p.coefficients)), integralData(std::unordered_map<int, double>(p.integralData)) {}
+
+Polynomial::Polynomial(Polynomial&& p) : coefficients(std::move(p.coefficients)), integralData(std::move(p.integralData)) {}
 
 Polynomial::Polynomial(const int value, const unsigned int exponent)
 {
@@ -189,6 +188,14 @@ Polynomial& Polynomial::operator *=(const Polynomial& rhs)
 	}
 
 	this->coefficients = res;
+
+	return *this;
+}
+
+Polynomial& Polynomial::operator=(Polynomial&& p)
+{
+	this->coefficients = std::move(p.coefficients);
+	this->integralData = std::move(p.integralData);
 
 	return *this;
 }

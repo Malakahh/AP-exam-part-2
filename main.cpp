@@ -79,6 +79,24 @@ BOOST_AUTO_TEST_CASE(CopyConstructor)
 	std::cout << p2 << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(MoveConstructor)
+{
+	Polynomial p;
+	Polynomial q(p);
+
+	BOOST_REQUIRE_THROW(p.GetCoefficient(0), std::out_of_range);
+	BOOST_CHECK_EQUAL(q.GetCoefficient(0), 0);
+}
+
+BOOST_AUTO_TEST_CASE(MoveAssignment)
+{
+	Polynomial p;
+	Polynomial q = p;
+
+	BOOST_REQUIRE_THROW(p.GetCoefficient(0), std::out_of_range);
+	BOOST_CHECK_EQUAL(q.GetCoefficient(0), 0);
+}
+
 BOOST_AUTO_TEST_CASE(Insert_Ordered)
 {
 	Polynomial p;

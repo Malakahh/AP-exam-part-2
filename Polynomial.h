@@ -22,6 +22,7 @@ private:
 public:
 	Polynomial(); //Default constructor
 	Polynomial(const Polynomial& p); //Copy constructor
+	Polynomial(Polynomial&& p); //Move constructor
 	Polynomial(std::initializer_list<int> list); //Constructor for braced initialization
 	Polynomial(const int value, const unsigned int exponent);
 
@@ -56,6 +57,7 @@ public:
 
 	Polynomial& operator+=(const Polynomial& rhs);
 	Polynomial& operator*=(const Polynomial& rhs);
+	Polynomial& operator=(Polynomial&&);
 
 };
 
