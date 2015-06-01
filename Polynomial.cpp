@@ -1,5 +1,9 @@
 #include "Polynomial.h"
 
+/*******
+******** 	Constructors
+********/
+
 Polynomial::Polynomial(): Polynomial(0,0) {}
 
 Polynomial::Polynomial(const Polynomial& p)
@@ -17,13 +21,20 @@ Polynomial::Polynomial(std::initializer_list<int> list)
 	this->SetCoefficientRange<std::initializer_list<int>>(list.begin(), list.end());
 }
 
+/*******
+******** 	Public methods
+********/
+
 void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
 {
+	std::lock_guard<std::mutex> lock(this->integralGuard);
+	this->integralData.clear();
+
 	if (exponent < this->coefficients.size())
 	{
 		this->coefficients[exponent] = value;
 	}
-	else if (exponent >= this->coefficients.size())
+	else
 	{
 		for (unsigned int i = coefficients.size(); i < exponent + 1; i++)
 		{
@@ -105,7 +116,7 @@ Polynomial Polynomial::CalculateDerivative() const
 		p.SetCoefficient(p.GetCoefficient(i + 1) * (i + 1), i);
 	}
 
-	//Erase last exponent
+	//Erase highest exponent
 	p.coefficients.erase(p.coefficients.end() - 1);
 
 	return p;
@@ -115,18 +126,36 @@ double Polynomial::CalculateIntegral(const int a, const int b) const
 {
 	auto p = this;
 	auto IntegralPart = [p](const int n){
-		auto res = 0.;
-
-		for (auto i = 0; i <= p->GetHighestCoefficient(); i++)
+		if (p->integralData.count(n) > 0) //key exists
 		{
-			res += p->GetCoefficient(i) * std::pow(n, i + 1) / (i + 1);
+			std::cout << "Retrieving: " << n << " from integral cache..." << std::endl;
+			return p->integralData.find(n)->second;	
 		}
+		else
+		{	
+			std::lock_guard<std::mutex> lock(p->integralGuard);
+			auto res = 0.;
 
-		return res;
+			for (auto i = 0; i <= p->GetHighestCoefficient(); i++)
+			{
+				res += p->GetCoefficient(i) * std::pow(n, i + 1) / (i + 1);
+			}
+
+			p->integralData.insert({ n, res });
+			return res;
+		}
 	};
 
-	return IntegralPart(b) - IntegralPart(a);
+	auto partB = std::async(IntegralPart, b);
+	auto partA = std::async(IntegralPart, a);
+
+	return partB.get() - partA.get();
+	//return IntegralPart(b) - IntegralPart(a);
 }
+
+/*******
+******** 	Operator overloads
+********/
 
 Polynomial& Polynomial::operator+=(const Polynomial& rhs)
 {
@@ -147,6 +176,8 @@ Polynomial& Polynomial::operator+=(const Polynomial& rhs)
 
 Polynomial& Polynomial::operator *=(const Polynomial& rhs)
 {
+	std::lock_guard<std::mutex> lock(this->integralGuard);
+	this->integralData.clear();
 	std::vector<int> res(this->GetHighestCoefficient() + rhs.GetHighestCoefficient() + 1, 0);
 
 	for (auto i = this->GetHighestCoefficient(); i >= 0; i--)

@@ -7,16 +7,22 @@
 #include <iterator>
 #include <cmath>
 #include <initializer_list>
+#include <algorithm>
+#include <unordered_map>
+#include <mutex>
+#include <future>
 
 class Polynomial
 {
 private:
 	std::vector<int> coefficients;
+	mutable std::unordered_map<int, double> integralData;
+	mutable std::mutex integralGuard;
 
 public:
 	Polynomial(); //Default constructor
 	Polynomial(const Polynomial& p); //Copy constructor
-	Polynomial(std::initializer_list<int> list);
+	Polynomial(std::initializer_list<int> list); //Constructor for braced initialization
 	Polynomial(const int value, const unsigned int exponent);
 
 	void SetCoefficient(const int value, const unsigned int exponent);

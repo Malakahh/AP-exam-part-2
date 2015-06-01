@@ -8,6 +8,7 @@
 
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
 {
+
 	Polynomial p;
 
 	BOOST_CHECK_EQUAL(p.GetHighestCoefficient(), 0);
@@ -16,6 +17,8 @@ BOOST_AUTO_TEST_CASE(DefaultConstructor)
 
 BOOST_AUTO_TEST_CASE(Constructor)
 {
+	BOOST_TEST_MESSAGE("Constructor\n");
+
 	const auto value = 40;
 	const unsigned int expo = 4;
 	Polynomial p(value, expo);
@@ -364,15 +367,11 @@ BOOST_AUTO_TEST_CASE(Derivative)
 	std::cout << pMark << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE(Integral)
+void RunIntegralCalculation(Polynomial &p)
 {
-	Polynomial p;
 	auto a = 3;
 	auto b = 5;
-	auto list = std::vector<int> {5, -1, 4, 2};
 	auto expectedResult = 1214. / 3.;
-
-	p.SetCoefficientRange<std::vector<int>>(list.cbegin(), list.cend());
 
 	auto i = p.CalculateIntegral(a, b);
 
@@ -380,6 +379,15 @@ BOOST_AUTO_TEST_CASE(Integral)
 	BOOST_CHECK(trunc(10. * i) == trunc(10. * expectedResult));
 
 	std::cout << "Intergal: " << i << " Expected: " << expectedResult << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(Integral)
+{
+	Polynomial p{5, -1, 4, 2};
+
+	//Calculating integral twice, to verify cache is in use
+	RunIntegralCalculation(p);
+	RunIntegralCalculation(p);
 }
 
 BOOST_AUTO_TEST_CASE(Plus_Equal_Operator)
