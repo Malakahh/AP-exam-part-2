@@ -4,42 +4,48 @@
 ******** 	Private Members
 ********/
 	
-struct Polynomial::PolynomialData
+	/*
+template <typename DC> struct Polynomial<DC>::PolynomialData
 {
-	std::vector<int> coefficients;
-	std::unordered_map<int, double> integralData;
-};
+	std::vector<DC> coefficients;
+	std::unordered_map<int, DC> integralData;
+};*/
 
 /*******
 ******** 	Constructors/Destructor
 ********/
 
-Polynomial::Polynomial(): Polynomial(0,0) {}
+//Default
+template <typename C> Polynomial<C>::Polynomial(): Polynomial(0,0) {}
 
-Polynomial::Polynomial(const Polynomial& p) : pImpl(std::make_unique<Polynomial::PolynomialData>(*p.pImpl)) {}
+//Copy
+template <typename C> Polynomial<C>::Polynomial(const Polynomial<C>& p) : pImpl(std::make_unique<Polynomial::PolynomialData<C>>(*p.pImpl)) {}
 
-Polynomial::Polynomial(Polynomial&& p) : pImpl(std::make_unique<Polynomial::PolynomialData>())
+//Move
+template <typename C> Polynomial<C>::Polynomial(Polynomial<C>&& p) : pImpl(std::make_unique<Polynomial::PolynomialData<C>>())
 {
 	std::swap(this->pImpl, p.pImpl);
 }
 
-Polynomial::Polynomial(const int value, const unsigned int exponent) : pImpl(std::make_unique<Polynomial::PolynomialData>())
+//Insert data, form: value * x^exponent
+template <typename C> Polynomial<C>::Polynomial(const C value, const unsigned int exponent) : pImpl(std::make_unique<Polynomial::PolynomialData<C>>())
 {
 	this->SetCoefficient(value, exponent);
 }
 
-Polynomial::Polynomial(std::initializer_list<int> list) : pImpl(std::make_unique<Polynomial::PolynomialData>())
+
+template <typename C> Polynomial<C>::Polynomial(std::initializer_list<C> list) : pImpl(std::make_unique<Polynomial::PolynomialData<C>>())
 {
-	this->SetCoefficientRange<std::initializer_list<int>>(list.begin(), list.end());
+	this->SetCoefficientRange<std::initializer_list<C>>(list.begin(), list.end());
 }
 
-Polynomial::~Polynomial() = default;
+template <typename C> Polynomial<C>::~Polynomial() = default;
 
 /*******
 ******** 	Public Members
 ********/
 
-void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
+template <typename C> void Polynomial<C>::SetCoefficient(const C value, const unsigned int exponent)
 {
 	std::lock_guard<std::mutex> lock(this->integralGuard);
 	this->pImpl->integralData.clear();
@@ -64,7 +70,7 @@ void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
 	}
 }
 
-int Polynomial::GetCoefficient(const unsigned int exponent) const
+template <typename C> C Polynomial<C>::GetCoefficient(const unsigned int exponent) const
 {
 	if (exponent >= this->pImpl->coefficients.size())
 	{
@@ -74,12 +80,12 @@ int Polynomial::GetCoefficient(const unsigned int exponent) const
 	return this->pImpl->coefficients[exponent];
 }
 
-int Polynomial::GetHighestCoefficient() const
+template <typename C> C Polynomial<C>::GetHighestCoefficient() const
 {
 	return this->pImpl->coefficients.size() - 1;
 }
 
-void Polynomial::Scale(const int scalar)
+template <typename C> void Polynomial<C>::Scale(const C scalar)
 {
 	for (auto i = 0; i <= this->GetHighestCoefficient(); i++)
 	{
@@ -87,7 +93,7 @@ void Polynomial::Scale(const int scalar)
 	}
 }
 
-void Polynomial::AddRoot(const int root)
+template <typename C> void Polynomial<C>::AddRoot(const C root)
 {
 	const auto start = this->GetHighestCoefficient();
 	for (auto i = start; i >= 0; i--)
@@ -109,9 +115,9 @@ void Polynomial::AddRoot(const int root)
 	}
 }
 
-double Polynomial::ValueAt(const double x) const
+template <typename C> C Polynomial<C>::ValueAt(const C x) const
 {
-	double res = 0;
+	C res = 0;
 
 	for (auto i = 0; i <= this->GetHighestCoefficient(); i++)
 	{
@@ -121,7 +127,7 @@ double Polynomial::ValueAt(const double x) const
 	return res;
 }
 
-Polynomial Polynomial::CalculateDerivative() const
+template <typename C> Polynomial<C> Polynomial<C>::CalculateDerivative() const
 {
 	Polynomial p(*this);
 
@@ -136,19 +142,25 @@ Polynomial Polynomial::CalculateDerivative() const
 	return p;
 }
 
-double Polynomial::CalculateIntegral(const int a, const int b) const
+template <typename C> C Polynomial<C>::CalculateIntegralDispatch(const C a, const C b, std::true_type) const
+{
+	static_assert(false, "Integrals for integer types are not supported");
+}
+
+template <typename C> C Polynomial<C>::CalculateIntegralDispatch(const C a, const C b, std::false_type) const
 {
 	auto p = this;
-	auto IntegralPart = [p](const int n){
+	auto IntegralPart = [p](const auto n){
+		auto res = 0.;
+
 		if (p->pImpl->integralData.count(n) > 0) //key exists
 		{
 			std::cout << "Retrieving: " << n << " from integral cache..." << std::endl;
-			return p->pImpl->integralData.find(n)->second;	
+			res = p->pImpl->integralData.find(n)->second;	
 		}
 		else
 		{	
 			std::lock_guard<std::mutex> lock(p->integralGuard);
-			auto res = 0.;
 
 			for (auto i = 0; i <= p->GetHighestCoefficient(); i++)
 			{
@@ -156,8 +168,9 @@ double Polynomial::CalculateIntegral(const int a, const int b) const
 			}
 
 			p->pImpl->integralData.insert({ n, res });
-			return res;
 		}
+
+		return res;
 	};
 
 	auto partB = std::async(IntegralPart, b);
@@ -166,11 +179,17 @@ double Polynomial::CalculateIntegral(const int a, const int b) const
 	return partB.get() - partA.get();
 }
 
+template <typename C> C Polynomial<C>::CalculateIntegral(const C a, const C b) const
+{
+	typename std::is_integral<C>::type isIntergral;
+	return this->CalculateIntegralDispatch(a, b, isIntergral);
+}
+
 /*******
 ******** 	Operator overloads
 ********/
 
-Polynomial& Polynomial::operator+=(const Polynomial& rhs)
+template <typename C> Polynomial<C>& Polynomial<C>::operator+=(const Polynomial<C>& rhs)
 {
 	for (auto i = 0; i <= rhs.GetHighestCoefficient(); i++)
 	{
@@ -187,11 +206,11 @@ Polynomial& Polynomial::operator+=(const Polynomial& rhs)
 	return *this;
 }
 
-Polynomial& Polynomial::operator *=(const Polynomial& rhs)
+template <typename C> Polynomial<C>& Polynomial<C>::operator *=(const Polynomial<C>& rhs)
 {
 	std::lock_guard<std::mutex> lock(this->integralGuard);
 	this->pImpl->integralData.clear();
-	std::vector<int> res(this->GetHighestCoefficient() + rhs.GetHighestCoefficient() + 1, 0);
+	std::vector<C> res(this->GetHighestCoefficient() + rhs.GetHighestCoefficient() + 1, 0);
 
 	for (auto i = this->GetHighestCoefficient(); i >= 0; i--)
 	{
@@ -206,31 +225,31 @@ Polynomial& Polynomial::operator *=(const Polynomial& rhs)
 	return *this;
 }
 
-Polynomial& Polynomial::operator=(const Polynomial& p)
+template <typename C> Polynomial<C>& Polynomial<C>::operator=(const Polynomial& p)
 {
 	*this->pImpl = *p.pImpl;
 	return *this;
 }
 
-Polynomial operator+(const Polynomial& lhs, const Polynomial& rhs)
+template <typename C> Polynomial<C> Polynomial<C>::operator+(const Polynomial<C>& rhs)
 {
-	Polynomial p(lhs);
+	Polynomial<C> p(*this);
 
 	p += rhs;
 
 	return p;
 }
 
-Polynomial operator*(const Polynomial& lhs, const Polynomial& rhs)
+template <typename C> Polynomial<C> Polynomial<C>::operator*(const Polynomial<C>& rhs)
 {
-	Polynomial p(lhs);
+	Polynomial<C> p(*this);
 
 	p *= rhs;
 
 	return p;
 }
 
-std::ostream& operator<<(std::ostream& s, const Polynomial& p)
+template <typename CO> std::ostream& operator<<(std::ostream& s, const Polynomial<CO>& p)
 {
 	s << "P(x) = ";
 
@@ -252,3 +271,27 @@ std::ostream& operator<<(std::ostream& s, const Polynomial& p)
 
 	return s;
 }
+
+/*******
+******** 	Generate specializations
+********/
+
+//Integer types
+template std::ostream& operator<< <int>(std::ostream&, const Polynomial<int>&);
+template class Polynomial<int>;
+
+
+//Floating point types
+
+/*
+template std::ostream& operator<< <float>(std::ostream&, const Polynomial<float>&);
+template class Polynomial<float>;
+*/
+
+template std::ostream& operator<< <double>(std::ostream&, const Polynomial<double>&);
+template class Polynomial<double>;
+
+/*
+template std::ostream& operator<< <long double>(std::ostream&, const Polynomial<long double>&);
+template class Polynomial<long double>;
+*/
