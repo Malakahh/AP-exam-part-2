@@ -1,0 +1,65 @@
+Name: 			Michael Lausdahl Fuglsang
+email:			mfugls11
+Study No.:		20112699
+
+Code also available at:
+https://github.com/Malakahh/Ap-exam-part-2
+
+--------------------------------------------------
+
+1) What compiler should be used?
+
+cygwin with gcc 4.9.2 alongside boost 1.58.0
+
+
+2) How the solution should be compiled
+
+with std=c++14
+
+
+3) How to specify inputs and execute the solution
+
+No inputs required. When you run it, the unit tests 
+will run and produce output for you to see.
+
+
+4) What outputs are expected
+
+The result of the unit tests should look like the following:
+
+--------------------------------------------------------
+Running 26 test cases...
+P(x) = 40x^4 + 0x^3 + 0x^2 + 0x + 0
+P(x) = 20x^4 + -40x^3 + -30x^2 + 20x + 10
+P(x) = 40x^4 + 0x^3 + 0x^2 + 0x + 77
+P(x) = 20x^2 + -10x + 3
+P(x) = 40x^4 + 0x^3 + 0x^2 + 0x + 0
+P(x) = 21x^2 + -11x + 4
+P(x) = 21x^2 + -11x + 4
+P(x) = 90x^9 + 0x^8 + 0x^7 + 0x^6 + 15x^5 + 14x^4 + 13x^3 + 12x^2 + 11x + 0
+P(x) = 90x^9 + 0x^8 + 0x^7 + 0x^6 + 15x^5 + 14x^4 + 13x^3 + 12x^2 + 11x + 0
+P(x) = 90x^9 + 0x^8 + 0x^7 + 0x^6 + 15x^5 + 14x^4 + 13x^3 + 12x^2 + 11x + 0
+P(x) = 21x^5 + -11x^4 + 4x^3 + 0x^2 + 0x + 0
+P(x) = 40x^4 + 0x^3 + 0x^2 + 5x + 0
+P(x) = 0
+P(x) = 40x^3 + 0x^2 + -20x + 6
+P(x) = -40x^3 + -0x^2 + 20x + -6
+P(x) = 2x^4 + 8x^3 + 7x^2 + 3x + 10
+P(x) = 2x^8 + 0x^7 + -27x^6 + -25x^5 + 23x^4 + -15x^3 + 2x^2 + 40x + -0
+-2.5 - CalcVal: -53.3203 Actual: -53.32
+-1.5 - CalcVal: 45.1172 Actual: 45.11
+-0.5 - CalcVal: -15.8203 Actual: -15.82
+0.5 - CalcVal: 18.8672 Actual: 18.86
+1.5 - CalcVal: -315.82 Actual: -315.82
+2.5 - CalcVal: -5204.88 Actual: -5204.88
+P(x) = 6x^2 + 8x + -1
+Area: 404.667 Expected: 404.667
+Retrieving: 5 from integral cache...
+Retrieving: 3 from integral cache...
+Area: 404.667 Expected: 404.667
+P(x) = 3x^4 + 7x^3 + 2x^2 + 5x + 2
+P(x) = 3x^4 + 7x^3 + 2x^2 + 5x + 2
+P(x) = 30x^5 + 60x^4 + 64x^3 + 68x^2 + -14x + -16
+P(x) = 30x^5 + 60x^4 + 64x^3 + 68x^2 + -14x + -16
+
+*** No errors detected

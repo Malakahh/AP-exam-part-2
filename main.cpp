@@ -15,6 +15,10 @@
 #include <stdexcept>
 #include <limits>
 
+/*
+	UNIT TESTS
+*/
+
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
 {
 	Polynomial<double> p;
@@ -25,8 +29,6 @@ BOOST_AUTO_TEST_CASE(DefaultConstructor)
 
 BOOST_AUTO_TEST_CASE(Constructor)
 {
-	BOOST_TEST_MESSAGE("Constructor\n");
-
 	const auto value = 40;
 	const unsigned int expo = 4;
 	Polynomial<double> p(value, expo);
