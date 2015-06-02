@@ -1,3 +1,12 @@
+/*
+	Name: 			Michael Lausdahl Fuglsang
+	email:			mfugls11
+	Study No.:		20112699
+
+	Code also available at:
+	https://github.com/Malakahh/Ap-exam-part-2
+*/
+
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE
 #include <boost/test/unit_test.hpp>
@@ -213,7 +222,6 @@ BOOST_AUTO_TEST_CASE(Insert_Partial_Range)
 	std::cout << p << std::endl;
 }
 
-/*
 BOOST_AUTO_TEST_CASE(Insert_Partial_Range_int)
 {
 	Polynomial<int> p;
@@ -251,8 +259,46 @@ BOOST_AUTO_TEST_CASE(Insert_Partial_Range_int)
 	}
 
 	std::cout << p << std::endl;
-}*/
+}
 
+BOOST_AUTO_TEST_CASE(Insert_Partial_Range_Long_Double)
+{
+	Polynomial<long double> p;
+
+	//Insert initial
+	auto coef = 9;
+	auto coefValue = 90;
+	p.SetCoefficient(coefValue, coef);
+
+	//Insert new
+	auto list2 = std::vector<long double>{11,12,13,14,15};
+	auto offset = 1;
+	p.SetCoefficientRange<std::vector<long double>>(list2.cbegin(), list2.cend(), offset);
+
+	BOOST_REQUIRE(p.GetHighestCoefficient() == coef);
+
+	//Check
+	for (unsigned int i = 0; i <= p.GetHighestCoefficient(); i++)
+	{
+		if (i < offset || i >= list2.size() + offset)
+		{
+			if (i == coef)
+			{
+				BOOST_CHECK_EQUAL(p.GetCoefficient(i), coefValue);
+			}
+			else
+			{
+				BOOST_CHECK_EQUAL(p.GetCoefficient(i), 0);
+			}
+		}
+		else
+		{
+			BOOST_CHECK_EQUAL(p.GetCoefficient(i), list2[i-offset]);
+		}
+	}
+
+	std::cout << p << std::endl;
+}
 
 BOOST_AUTO_TEST_CASE(Insert_Extended_Range)
 {
