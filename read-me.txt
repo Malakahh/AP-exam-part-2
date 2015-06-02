@@ -5,6 +5,9 @@ Study No.:		20112699
 Code also available at:
 https://github.com/Malakahh/Ap-exam-part-2
 
+As a compile script, I've attached compile.sh
+You will need to modify the paths to fit your system.
+
 1) What compiler should be used?
 
 cygwin with gcc 4.9.2 alongside boost 1.58.0
