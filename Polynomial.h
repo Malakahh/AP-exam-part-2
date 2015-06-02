@@ -11,12 +11,15 @@
 #include <unordered_map>
 #include <mutex>
 #include <future>
+#include <memory>
 
 class Polynomial
 {
 private:
-	std::vector<int> coefficients;
-	mutable std::unordered_map<int, double> integralData;
+	//Using Pimpl idiom
+	struct PolynomialData;
+	mutable std::unique_ptr<PolynomialData> pImpl;
+
 	mutable std::mutex integralGuard;
 
 public:
@@ -25,6 +28,7 @@ public:
 	Polynomial(Polynomial&& p); //Move constructor
 	Polynomial(std::initializer_list<int> list); //Constructor for braced initialization
 	Polynomial(const int value, const unsigned int exponent);
+	~Polynomial(); //Destructor
 
 	void SetCoefficient(const int value, const unsigned int exponent);
 	template<typename T> void SetCoefficientRange(typename T::const_iterator first, typename T::const_iterator last, const unsigned int offset = 0)
@@ -57,8 +61,7 @@ public:
 
 	Polynomial& operator+=(const Polynomial& rhs);
 	Polynomial& operator*=(const Polynomial& rhs);
-	Polynomial& operator=(Polynomial&&);
-
+	Polynomial& operator=(const Polynomial& p);
 };
 
 Polynomial operator+(const Polynomial& lhs, const Polynomial& rhs);

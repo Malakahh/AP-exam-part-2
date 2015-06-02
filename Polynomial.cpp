@@ -1,49 +1,64 @@
 #include "Polynomial.h"
 
 /*******
-******** 	Constructors
+******** 	Private Members
+********/
+	
+struct Polynomial::PolynomialData
+{
+	std::vector<int> coefficients;
+	std::unordered_map<int, double> integralData;
+};
+
+/*******
+******** 	Constructors/Destructor
 ********/
 
 Polynomial::Polynomial(): Polynomial(0,0) {}
 
-Polynomial::Polynomial(const Polynomial& p) : coefficients(std::vector<int>(p.coefficients)), integralData(std::unordered_map<int, double>(p.integralData)) {}
+Polynomial::Polynomial(const Polynomial& p) : pImpl(std::make_unique<Polynomial::PolynomialData>(*p.pImpl)) {}
 
-Polynomial::Polynomial(Polynomial&& p) : coefficients(std::move(p.coefficients)), integralData(std::move(p.integralData)) {}
+Polynomial::Polynomial(Polynomial&& p) : pImpl(std::make_unique<Polynomial::PolynomialData>())
+{
+	std::swap(this->pImpl, p.pImpl);
+}
 
-Polynomial::Polynomial(const int value, const unsigned int exponent)
+Polynomial::Polynomial(const int value, const unsigned int exponent) : pImpl(std::make_unique<Polynomial::PolynomialData>())
 {
 	this->SetCoefficient(value, exponent);
 }
 
-Polynomial::Polynomial(std::initializer_list<int> list)
+Polynomial::Polynomial(std::initializer_list<int> list) : pImpl(std::make_unique<Polynomial::PolynomialData>())
 {
 	this->SetCoefficientRange<std::initializer_list<int>>(list.begin(), list.end());
 }
 
+Polynomial::~Polynomial() = default;
+
 /*******
-******** 	Public methods
+******** 	Public Members
 ********/
 
 void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
 {
 	std::lock_guard<std::mutex> lock(this->integralGuard);
-	this->integralData.clear();
+	this->pImpl->integralData.clear();
 
-	if (exponent < this->coefficients.size())
+	if (exponent < this->pImpl->coefficients.size())
 	{
-		this->coefficients[exponent] = value;
+		this->pImpl->coefficients[exponent] = value;
 	}
 	else
 	{
-		for (unsigned int i = coefficients.size(); i < exponent + 1; i++)
+		for (unsigned int i = this->pImpl->coefficients.size(); i < exponent + 1; i++)
 		{
 			if (i < exponent)
 			{
-				this->coefficients.push_back(0);
+				this->pImpl->coefficients.push_back(0);
 			}
 			else
 			{
-				this->coefficients.push_back(value);
+				this->pImpl->coefficients.push_back(value);
 			}
 		}
 	}
@@ -51,17 +66,17 @@ void Polynomial::SetCoefficient(const int value, const unsigned int exponent)
 
 int Polynomial::GetCoefficient(const unsigned int exponent) const
 {
-	if (exponent >= this->coefficients.size())
+	if (exponent >= this->pImpl->coefficients.size())
 	{
 		throw std::out_of_range("Index out of bounds");
 	}
 
-	return this->coefficients[exponent];
+	return this->pImpl->coefficients[exponent];
 }
 
 int Polynomial::GetHighestCoefficient() const
 {
-	return this->coefficients.size() - 1;
+	return this->pImpl->coefficients.size() - 1;
 }
 
 void Polynomial::Scale(const int scalar)
@@ -116,7 +131,7 @@ Polynomial Polynomial::CalculateDerivative() const
 	}
 
 	//Erase highest exponent
-	p.coefficients.erase(p.coefficients.end() - 1);
+	p.pImpl->coefficients.erase(p.pImpl->coefficients.end() - 1);
 
 	return p;
 }
@@ -125,10 +140,10 @@ double Polynomial::CalculateIntegral(const int a, const int b) const
 {
 	auto p = this;
 	auto IntegralPart = [p](const int n){
-		if (p->integralData.count(n) > 0) //key exists
+		if (p->pImpl->integralData.count(n) > 0) //key exists
 		{
 			std::cout << "Retrieving: " << n << " from integral cache..." << std::endl;
-			return p->integralData.find(n)->second;	
+			return p->pImpl->integralData.find(n)->second;	
 		}
 		else
 		{	
@@ -140,7 +155,7 @@ double Polynomial::CalculateIntegral(const int a, const int b) const
 				res += p->GetCoefficient(i) * std::pow(n, i + 1) / (i + 1);
 			}
 
-			p->integralData.insert({ n, res });
+			p->pImpl->integralData.insert({ n, res });
 			return res;
 		}
 	};
@@ -149,7 +164,6 @@ double Polynomial::CalculateIntegral(const int a, const int b) const
 	auto partA = std::async(IntegralPart, a);
 
 	return partB.get() - partA.get();
-	//return IntegralPart(b) - IntegralPart(a);
 }
 
 /*******
@@ -176,7 +190,7 @@ Polynomial& Polynomial::operator+=(const Polynomial& rhs)
 Polynomial& Polynomial::operator *=(const Polynomial& rhs)
 {
 	std::lock_guard<std::mutex> lock(this->integralGuard);
-	this->integralData.clear();
+	this->pImpl->integralData.clear();
 	std::vector<int> res(this->GetHighestCoefficient() + rhs.GetHighestCoefficient() + 1, 0);
 
 	for (auto i = this->GetHighestCoefficient(); i >= 0; i--)
@@ -187,16 +201,14 @@ Polynomial& Polynomial::operator *=(const Polynomial& rhs)
 		}
 	}
 
-	this->coefficients = res;
+	this->pImpl->coefficients = res;
 
 	return *this;
 }
 
-Polynomial& Polynomial::operator=(Polynomial&& p)
+Polynomial& Polynomial::operator=(const Polynomial& p)
 {
-	this->coefficients = std::move(p.coefficients);
-	this->integralData = std::move(p.integralData);
-
+	*this->pImpl = *p.pImpl;
 	return *this;
 }
 
