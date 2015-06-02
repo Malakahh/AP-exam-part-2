@@ -17,6 +17,10 @@
 #include <future>
 #include <cassert>
 
+/*
+	This is a template class.
+	Solves requirement 2.
+*/
 template <typename C> class Polynomial
 {
 private:
@@ -89,6 +93,12 @@ public:
 	/*
 		Valuates the polynomial at a given point.
 		Solves requirement 1f.
+
+		Furthermore, it uses const both as an input parameter, 
+		signifying that the method call won't change the value of the input,
+		as well as the fact that it is a const function, signifying that
+		this method call doesn't change the expected data in the instance.
+		Solves requirement 4.
 	*/
 	C ValueAt(const C x) const;
 

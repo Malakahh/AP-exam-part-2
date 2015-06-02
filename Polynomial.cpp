@@ -214,6 +214,9 @@ template <typename C> C Polynomial<C>::CalculateIntegralDispatch(const C a, cons
 		Lambda expression used to calculate one part of an integral.
 		Solves requirement 9.
 
+		In addition, I'm using auto here to deduce types.
+		This solves requirement 3.
+
 		Furthermore, it caches its results to minimize calculations. This is thread-safe.
 		Solves requirement 6.
 	*/
