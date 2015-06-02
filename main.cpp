@@ -156,6 +156,25 @@ BOOST_AUTO_TEST_CASE(Insert_Full_Range)
 	std::cout << p << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(Insert_Full_Range_Array)
+{
+	Polynomial p;
+
+	auto arr = std::array<int, 3> {4, -11, 21};
+
+	p.SetCoefficientRange<std::array<int, 5>>(arr.cbegin(), arr.cend());
+
+	BOOST_REQUIRE(p.GetHighestCoefficient() == arr.size() - 1);
+
+	//Check
+	for (unsigned int i = 0; i <= p.GetHighestCoefficient(); i++)
+	{
+		BOOST_CHECK_EQUAL(p.GetCoefficient(i), arr[i]);
+	}
+
+	std::cout << p << std::endl;
+}
+
 BOOST_AUTO_TEST_CASE(Insert_Partial_Range)
 {
 	Polynomial p;
